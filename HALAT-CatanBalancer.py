@@ -6,11 +6,13 @@ import numpy as np
 import random
 import math
 import matplotlib
+from flask import Flask, send_file, jsonify
+import os
+
+matplotlib.use("Agg")  # Use a non-interactive backend for Flask
 
 # Reduce DPI to a more reasonable value
 plt.rcParams["figure.dpi"] = 100
-
-matplotlib.use("TkAgg")
 
 fig, ax = plt.subplots(1)
 fig.set_size_inches(10, 8)  # Increase canvas size
@@ -451,4 +453,29 @@ ax.legend(
 
 # plt.autoscale(enable = True)
 plt.tight_layout()  # Adjust layout to ensure everything fits
-plt.show()
+
+
+def save_board(output_path):
+    plt.savefig(output_path)
+
+
+app = Flask(__name__)
+
+
+@app.route("/generate-board", methods=["GET"])
+def generate_board():
+    # Generate the board and save it as an image
+    output_path = "board.png"
+    save_board(output_path)
+
+    # Return the image as a response
+    return send_file(output_path, mimetype="image/png")
+
+
+@app.route("/health", methods=["GET"])
+def health_check():
+    return jsonify({"status": "ok"})
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
