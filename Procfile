@@ -1,1 +1,1 @@
-web: python HALAT-CatanBalancer.py
+web: gunicorn HALAT-CatanBalancer:app --bind 0.0.0.0:$PORT
